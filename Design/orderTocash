@@ -1,0 +1,19 @@
+flowchart TD
+  A[Customer Inquiry] --> B[Quotation]
+  B --> C{Quotation Accepted?}
+  C -->|Yes| D[Create Sales Order]
+  C -->|No| Z[Close]
+  D --> E[Check Customer Credit & Balance]
+  E --> F{Credit OK?}
+  F -->|No| F1[Raise Approval / Hold Order]
+  F -->|Yes| G[Check Stock Availability]
+  G --> H{In Stock?}
+  H -->|Yes| I[Reserve Stock & Create Pick List]
+  H -->|No| J[Backorder / Trigger Production / Partial Ship]
+  I --> K[Pick & Pack]
+  K --> L[Dispatch / Delivery Note]
+  L --> M[Generate Invoice]
+  M --> N[Send Invoice to Customer]
+  N --> O[Receive Payment]
+  O --> P[Post AR & GL Entries]
+  P --> Q[Close Order]

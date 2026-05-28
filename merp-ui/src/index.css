@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-merp-primary: #1d4ed8;
+  --color-merp-secondary: #0f172a;
+  --color-merp-accent: #3b82f6;
+  --color-merp-background: #f8fafc;
+  --color-merp-surface: #ffffff;
+}
+
+body {
+  background-color: var(--color-merp-background);
+  color: var(--color-merp-secondary);
+  font-family: 'Inter', sans-serif;
+}

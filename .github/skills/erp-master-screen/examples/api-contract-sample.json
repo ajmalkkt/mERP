@@ -1,0 +1,225 @@
+{
+    "entity": "Item",
+    "module": "masters",
+    "endpoints": {
+        "list": {
+            "method": "GET",
+            "url": "/api/masters/item",
+            "queryParams": {
+                "page": 1,
+                "pageSize": 25,
+                "sort": "itemCode:asc",
+                "filter": "itemGroup:eq:raw_material",
+                "search": "bolt",
+                "companyId": "comp_001",
+                "branchId": "br_001"
+            },
+            "response": {
+                "success": true,
+                "data": [
+                    {
+                        "id": "itm_abc123",
+                        "itemCode": "ITM-001",
+                        "itemName": "Hex Bolt M10",
+                        "itemGroup": "raw_material",
+                        "itemCategory": "cat_fasteners",
+                        "unitOfMeasure": "pcs",
+                        "unitPrice": 12.5,
+                        "taxRate": 18,
+                        "isActive": true,
+                        "createdAt": "2025-01-15T09:30:00Z",
+                        "createdBy": "admin@company.com",
+                        "modifiedAt": "2025-03-01T14:22:00Z",
+                        "modifiedBy": "manager@company.com"
+                    }
+                ],
+                "pagination": {
+                    "page": 1,
+                    "pageSize": 25,
+                    "totalRows": 1423,
+                    "totalPages": 57
+                }
+            }
+        },
+        "getById": {
+            "method": "GET",
+            "url": "/api/masters/item/:id",
+            "response": {
+                "success": true,
+                "data": {
+                    "id": "itm_abc123",
+                    "itemCode": "ITM-001",
+                    "itemName": "Hex Bolt M10",
+                    "description": "High tensile hex bolt, Grade 8.8, M10 x 30mm",
+                    "itemGroup": "raw_material",
+                    "itemCategory": "cat_fasteners",
+                    "unitOfMeasure": "pcs",
+                    "unitPrice": 12.5,
+                    "taxRate": 18,
+                    "reorderLevel": 500,
+                    "reorderQuantity": 2000,
+                    "defaultWarehouse": "wh_main",
+                    "isActive": true,
+                    "itemImage": "/uploads/items/itm_abc123.jpg",
+                    "notes": "Preferred vendor: ABC Fasteners Ltd.",
+                    "companyId": "comp_001",
+                    "branchId": "br_001",
+                    "createdAt": "2025-01-15T09:30:00Z",
+                    "createdBy": "admin@company.com",
+                    "modifiedAt": "2025-03-01T14:22:00Z",
+                    "modifiedBy": "manager@company.com"
+                }
+            }
+        },
+        "create": {
+            "method": "POST",
+            "url": "/api/masters/item",
+            "requestBody": {
+                "itemCode": "ITM-002",
+                "itemName": "Hex Nut M10",
+                "description": "High tensile hex nut, Grade 8, M10",
+                "itemGroup": "raw_material",
+                "itemCategory": "cat_fasteners",
+                "unitOfMeasure": "pcs",
+                "unitPrice": 5.0,
+                "taxRate": 18,
+                "reorderLevel": 1000,
+                "reorderQuantity": 5000,
+                "defaultWarehouse": "wh_main",
+                "isActive": true,
+                "companyId": "comp_001",
+                "branchId": "br_001"
+            },
+            "response": {
+                "success": true,
+                "data": {
+                    "id": "itm_def456",
+                    "itemCode": "ITM-002",
+                    "itemName": "Hex Nut M10"
+                },
+                "message": "Item created successfully"
+            }
+        },
+        "update": {
+            "method": "PUT",
+            "url": "/api/masters/item/:id",
+            "requestBody": {
+                "itemName": "Hex Nut M10 (Updated)",
+                "unitPrice": 5.25
+            },
+            "response": {
+                "success": true,
+                "data": {
+                    "id": "itm_def456",
+                    "itemName": "Hex Nut M10 (Updated)",
+                    "unitPrice": 5.25,
+                    "modifiedAt": "2025-03-11T10:00:00Z",
+                    "modifiedBy": "admin@company.com"
+                },
+                "message": "Item updated successfully"
+            }
+        },
+        "delete": {
+            "method": "DELETE",
+            "url": "/api/masters/item/:id",
+            "response": {
+                "success": true,
+                "message": "Item soft-deleted successfully"
+            }
+        },
+        "bulk": {
+            "method": "POST",
+            "url": "/api/masters/item/bulk",
+            "requestBody": {
+                "action": "create",
+                "records": [
+                    {
+                        "itemCode": "ITM-003",
+                        "itemName": "Washer M10",
+                        "unitPrice": 2.0
+                    },
+                    {
+                        "itemCode": "ITM-004",
+                        "itemName": "Spring Washer M10",
+                        "unitPrice": 3.5
+                    }
+                ],
+                "companyId": "comp_001",
+                "branchId": "br_001"
+            },
+            "response": {
+                "success": true,
+                "created": 2,
+                "failed": 0,
+                "errors": []
+            }
+        },
+        "export": {
+            "method": "GET",
+            "url": "/api/masters/item/export",
+            "queryParams": {
+                "format": "xlsx",
+                "companyId": "comp_001"
+            },
+            "response": "Binary file download (Content-Disposition: attachment)"
+        },
+        "fieldConfig": {
+            "get": {
+                "method": "GET",
+                "url": "/api/config/fields/item",
+                "queryParams": {
+                    "companyId": "comp_001"
+                },
+                "response": {
+                    "success": true,
+                    "data": "Array of field config objects (see field-config-sample.json)"
+                }
+            },
+            "save": {
+                "method": "PUT",
+                "url": "/api/config/fields/item",
+                "requestBody": {
+                    "companyId": "comp_001",
+                    "fields": "Array of field config objects"
+                },
+                "response": {
+                    "success": true,
+                    "message": "Field configuration saved"
+                }
+            }
+        }
+    },
+    "errorResponses": {
+        "validationError": {
+            "success": false,
+            "error": {
+                "code": "VALIDATION_ERROR",
+                "message": "Validation failed",
+                "details": [
+                    {
+                        "field": "itemCode",
+                        "message": "Item code already exists"
+                    },
+                    {
+                        "field": "unitPrice",
+                        "message": "Unit price must be greater than 0"
+                    }
+                ]
+            }
+        },
+        "notFound": {
+            "success": false,
+            "error": {
+                "code": "NOT_FOUND",
+                "message": "Item not found"
+            }
+        },
+        "unauthorized": {
+            "success": false,
+            "error": {
+                "code": "UNAUTHORIZED",
+                "message": "Insufficient permissions"
+            }
+        }
+    }
+}
