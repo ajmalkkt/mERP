@@ -1,6 +1,7 @@
 import express from 'express';
 import { SecurityService } from '../services/securityService';
 import { AuthMiddleware } from '../middleware/authMiddleware';
+import { UserRepository } from '../repositories/userRepository';
 
 const router = express.Router();
 
@@ -82,6 +83,39 @@ router.get('/permissions', AuthMiddleware.authenticate, (req, res) => {
       permissions: user.permissions
     }
   });
+});
+
+/**
+ * GET /api/auth/users
+ * Get list of all users (Admin only)
+ */
+router.get('/users', AuthMiddleware.authenticate, AuthMiddleware.requireRole('ADMIN'), async (req, res) => {
+  try {
+    const skip = req.query.skip ? parseInt(req.query.skip as string) : 0;
+    const take = req.query.take ? parseInt(req.query.take as string) : 50;
+    const companyId = req.query.companyId ? parseInt(req.query.companyId as string) : undefined;
+    
+    let users;
+    if (companyId) {
+      const result = await UserRepository.findByCompany(companyId, skip, take);
+      users = result.data;
+    } else {
+      // Get all users with pagination (basic approach)
+      const result = await UserRepository.findByCompany(1, skip, take); // Default to company 1 if not specified
+      users = result.data;
+    }
+
+    res.json({
+      success: true,
+      data: users,
+      length: users.length
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      error: { code: 'SERVER_ERROR', message: error.message }
+    });
+  }
 });
 
 export default router;

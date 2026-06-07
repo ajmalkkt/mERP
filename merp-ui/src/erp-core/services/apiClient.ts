@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type { AxiosInstance, AxiosRequestConfig } from 'axios';
+import { API_BASE_URL } from '../../config/api';
 
 interface ApiClientConfig {
   baseURL?: string;
@@ -16,7 +17,7 @@ class ApiClient {
 
   constructor(config: ApiClientConfig = {}) {
     this.client = axios.create({
-      baseURL: config.baseURL || 'http://localhost:5000/api',
+      baseURL: config.baseURL || API_BASE_URL,
       timeout: config.timeout || 30000,
       headers: {
         'Content-Type': 'application/json',

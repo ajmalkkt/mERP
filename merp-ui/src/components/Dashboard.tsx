@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL } from '../config/api';
 
 interface DashboardStats {
   totalProducts: number;
@@ -14,6 +15,7 @@ interface DashboardStats {
 }
 
 export function Dashboard() {
+  const { token } = useAuth();
   const [stats, setStats] = useState<DashboardStats>({
     totalProducts: 0,
     totalVouchers: 0,
@@ -24,21 +26,30 @@ export function Dashboard() {
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [token]);
 
   const fetchDashboardData = async () => {
     try {
-      // Fetch basic stats - these would be real API calls in production
+      const baseURL = API_BASE_URL;
+      const headers = {
+        'Authorization': `Bearer ${token || localStorage.getItem('authToken') || ''}`
+      };
+      
+      // Fetch basic stats from the API endpoints
       const [productsRes, vouchersRes, usersRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/meta/master/PRODUCT'),
-        axios.get('http://localhost:5000/api/txn/vouchers?limit=1'),
-        axios.get('http://localhost:5000/api/auth/users')
+        fetch(`${baseURL}/meta/master/PRODUCT?limit=1`, { headers }),
+        fetch(`${baseURL}/txn/vouchers?limit=1`, { headers }),
+        fetch(`${baseURL}/auth/users?limit=1`, { headers })
       ]);
 
+      const productsData = productsRes.ok ? await productsRes.json() : {};
+      const vouchersData = vouchersRes.ok ? await vouchersRes.json() : {};
+      const usersData = usersRes.ok ? await usersRes.json() : {};
+
       setStats({
-        totalProducts: productsRes.data?.length || 0,
-        totalVouchers: vouchersRes.data?.total || 0,
-        totalUsers: usersRes.data?.length || 0,
+        totalProducts: productsData.length || productsData.data?.length || 0,
+        totalVouchers: vouchersData.total || vouchersData.data?.length || 0,
+        totalUsers: usersData.length || usersData.data?.length || 0,
         recentActivity: [
           { id: '1', type: 'voucher', description: 'Sales Invoice #SI-001 created', timestamp: new Date().toISOString() },
           { id: '2', type: 'product', description: 'New product "Laptop" added', timestamp: new Date(Date.now() - 3600000).toISOString() },

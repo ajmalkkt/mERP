@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 import {
   useReactTable,
   getCoreRowModel,
@@ -23,7 +24,7 @@ export function VoucherScreen() {
 
   // Fetch the voucher layout definition from Metadata Engine
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/meta/voucher/${voucherType}`)
+    axios.get(`${API_BASE_URL}/meta/voucher/${voucherType}`)
       .then(res => {
         setSchema(res.data);
       })
@@ -57,7 +58,7 @@ export function VoucherScreen() {
         companyId: headerData.companyId
       };
 
-      const res = await axios.post('http://localhost:5000/api/txn/process', payload);
+      const res = await axios.post(`${API_BASE_URL}/txn/process`, payload);
       alert(`✅ Success: Voucher ${res.data.voucherNo} posted successfully! Ledgers and Stock Movement applied.`);
 
       // Reset after success

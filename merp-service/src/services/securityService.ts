@@ -19,7 +19,7 @@ export class SecurityService {
       }
     });
 
-    if (!user || user.status !== 'ACTIVE') {
+    if (!user || (user.status !== 'ACTIVE' && user.status !== 'active')) {
       throw new Error('Invalid credentials');
     }
 

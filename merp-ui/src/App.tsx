@@ -1,6 +1,8 @@
 import React from 'react';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Routes, Route, Link, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import { Dashboard } from './components/Dashboard';
+import { Login } from './components/Login';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 import CompanyMaster from './modules/masters/Company/CompanyMaster';
 import BranchMaster from './modules/masters/Branch/BranchMaster';
@@ -17,6 +19,13 @@ import { VoucherScreen } from './components/VoucherScreen';
 
 function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { username, name, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   const navLink = (path: string, icon: string, label: string) => (
     <Link
@@ -66,14 +75,22 @@ function Layout({ children }: { children: React.ReactNode }) {
           <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 mt-6 mb-2">System</div>
           {navLink('/metadata', '⚙️', 'Metadata Engine')}
         </nav>
-        <div className="p-4 border-t border-slate-800 mt-auto">
+        <div className="p-4 border-t border-slate-800 mt-auto space-y-3">
            <div className="flex items-center gap-3 text-sm">
-             <div className="w-10 h-10 rounded-full bg-slate-700 border-2 border-slate-600"></div>
-             <div>
-               <div className="text-white font-medium">Admin User</div>
-               <div className="text-slate-500 text-xs">HQ Branch</div>
+             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center border-2 border-slate-600 font-bold text-white">
+               {(username || name || 'U')[0].toUpperCase()}
+             </div>
+             <div className="flex-1">
+               <div className="text-white font-medium text-sm">{name || username || 'User'}</div>
+               <div className="text-slate-500 text-xs">{username}</div>
              </div>
            </div>
+           <button
+             onClick={handleLogout}
+             className="w-full px-4 py-2 bg-red-600/20 hover:bg-red-600/30 border border-red-600/50 rounded-lg text-red-400 text-sm font-medium transition-colors"
+           >
+             Logout
+           </button>
         </div>
       </aside>
 
@@ -97,33 +114,58 @@ function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+function AppContent() {
+  const { isAuthenticated } = useAuth();
+
+  return (
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/login" element={<Login />} />
+
+      {/* Protected Routes */}
+      {isAuthenticated ? (
+        <Route
+          path="/*"
+          element={
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+
+                {/* Organization Masters (Phase 1.1) */}
+                <Route path="/masters/companies" element={<CompanyMaster />} />
+                <Route path="/masters/branches" element={<BranchMaster />} />
+                <Route path="/masters/departments" element={<DepartmentMaster />} />
+                <Route path="/masters/users" element={<UserMaster />} />
+                <Route path="/masters/roles" element={<RoleMaster />} />
+
+                {/* Item & Account Masters (Phase 1.3) */}
+                <Route path="/masters/items" element={<ItemMaster />} />
+                <Route path="/masters/accounts" element={<AccountMaster />} />
+                <Route path="/masters/categories" element={<CategoryMaster />} />
+                <Route path="/masters/units" element={<UnitMaster />} />
+                <Route path="/masters/warehouses" element={<WarehouseMaster />} />
+
+                {/* Transactions */}
+                <Route path="/vouchers" element={<VoucherScreen />} />
+                
+                {/* System */}
+                <Route path="/metadata" element={<div className="p-8"><h1 className="text-3xl font-extrabold tracking-tight text-slate-800 mb-4">Metadata Brain</h1><p className="text-slate-500">Under Construction...</p></div>} />
+              </Routes>
+            </Layout>
+          }
+        />
+      ) : (
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      )}
+    </Routes>
+  );
+}
+
 function App() {
   return (
-    <Layout>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-
-        {/* Organization Masters (Phase 1.1) */}
-        <Route path="/masters/companies" element={<CompanyMaster />} />
-        <Route path="/masters/branches" element={<BranchMaster />} />
-        <Route path="/masters/departments" element={<DepartmentMaster />} />
-        <Route path="/masters/users" element={<UserMaster />} />
-        <Route path="/masters/roles" element={<RoleMaster />} />
-
-        {/* Item & Account Masters (Phase 1.3) */}
-        <Route path="/masters/items" element={<ItemMaster />} />
-        <Route path="/masters/accounts" element={<AccountMaster />} />
-        <Route path="/masters/categories" element={<CategoryMaster />} />
-        <Route path="/masters/units" element={<UnitMaster />} />
-        <Route path="/masters/warehouses" element={<WarehouseMaster />} />
-
-        {/* Transactions */}
-        <Route path="/vouchers" element={<VoucherScreen />} />
-        
-        {/* System */}
-        <Route path="/metadata" element={<div className="p-8"><h1 className="text-3xl font-extrabold tracking-tight text-slate-800 mb-4">Metadata Brain</h1><p className="text-slate-500">Under Construction...</p></div>} />
-      </Routes>
-    </Layout>
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

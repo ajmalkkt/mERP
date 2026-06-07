@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
 interface WorkflowState {
   id?: number;
@@ -65,7 +66,7 @@ export function WorkflowApprovalPanel({
       setError(null);
 
       const stateRes = await axios.get(
-        `http://localhost:5000/api/workflow/state/${entityType}/${entityId}`
+        `${API_BASE_URL}/workflow/state/${entityType}/${entityId}`
       );
 
       if (stateRes.data) {
@@ -75,7 +76,7 @@ export function WorkflowApprovalPanel({
         // Fetch current approvers if in progress
         if (stateRes.data.status === 'IN_PROGRESS' && stateRes.data.instanceId) {
           const approversRes = await axios.get(
-            `http://localhost:5000/api/workflow/approvers/${stateRes.data.instanceId}`
+            `${API_BASE_URL}/workflow/approvers/${stateRes.data.instanceId}`
           );
           setCurrentApprovers(approversRes.data);
         }
@@ -93,7 +94,7 @@ export function WorkflowApprovalPanel({
 
     try {
       const res = await axios.post(
-        'http://localhost:5000/api/workflow/can-approve',
+        `${API_BASE_URL}/workflow/can-approve`,
         {
           instanceId: workflowState.instanceId,
           userId
@@ -118,7 +119,7 @@ export function WorkflowApprovalPanel({
       setSuccess(null);
 
       await axios.post(
-        'http://localhost:5000/api/workflow/action',
+        `${API_BASE_URL}/workflow/action`,
         {
           instanceId: workflowState.instanceId,
           action: selectedAction,

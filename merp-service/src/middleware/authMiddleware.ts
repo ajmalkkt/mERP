@@ -48,7 +48,7 @@ export class AuthMiddleware {
         }
       });
 
-      if (!user || user.status !== 'ACTIVE') {
+      if (!user || (user.status !== 'ACTIVE' && user.status !== 'active')) {
         return res.status(401).json({ error: 'User not found or inactive' });
       }
 
